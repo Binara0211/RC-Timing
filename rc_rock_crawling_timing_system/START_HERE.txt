@@ -1,0 +1,35 @@
+RC ROCK CRAWLING TIMING SYSTEM V2.0
+==================================
+
+YOU ALREADY HAVE V1 WORKING?
+----------------------------
+Recommended for you:
+1. Extract this V2 ZIP to a temporary folder, for example C:\RC-Timing-V2.
+2. Close the old RC Timing server (Ctrl+C in its black window).
+3. Double-click: scripts\UPGRADE_EXISTING_V1.bat
+4. The upgrade preserves your existing:
+   - config/config.json (including USB camera index and START/FINISH zones)
+   - data/rc_timing.db
+   - backups
+   - exports
+   - logs
+   - markers
+5. Start normally with scripts\LAUNCH_OPERATOR.bat
+6. Operator: http://127.0.0.1:8765/operator
+7. TV:       http://127.0.0.1:8765/tv
+8. Camera:   http://127.0.0.1:8765/settings
+9. On the TV press F11 for full screen.
+
+FRESH INSTALLATION?
+-------------------
+1. Install 64-bit Python 3.12.
+2. Extract/copy the whole project to C:\RC-Timing\rc_rock_crawling_timing_system.
+3. Double-click scripts\INSTALL_WINDOWS.bat while internet is available once.
+4. This fresh V2 package is preconfigured for a 1280x720, 30 FPS USB camera on source index 1.
+5. If your camera is not index 1, edit config\config.json and try source 0 or 2.
+6. Run scripts\LAUNCH_OPERATOR.bat.
+
+IMPORTANT
+---------
+Do not delete or replace your working data/rc_timing.db unless you intentionally want a new database.
+Do not overwrite a calibrated config/config.json when upgrading an existing working track.

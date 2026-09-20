@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RC Rock Crawling • Live</title><link rel="stylesheet" href="/static/app.css"></head>
+<body class="tv-body"><main class="tv-dashboard">
+<header class="tv-header">
+  <div class="tv-brand"><div class="brand-mark">RC</div><div><div class="tv-brand-main">PLAY PLANET</div><div class="tv-brand-sub">RC ARENA</div></div></div>
+  <div class="tv-title"><h1><span>RC</span> ROCK CRAWLING</h1><p>Conquer the terrain • Master the control • Beat the clock</p></div>
+  <div class="tv-clockbox"><div class="live-indicator">LIVE</div><div class="tvclock" id="clock">--:--:--</div><div class="tvdate" id="date">---</div></div>
+</header>
+<section class="tv-hero">
+  <div class="hero-photo"><img src="/static/images/crawler_bridge.jpg" alt="RC crawler on bridge"></div>
+  <div class="record-card" id="recordCard"><div class="record-label" id="recordLabel">TODAY'S TRACK RECORD</div><div class="trophy">🏆</div><div class="record-copy"><div class="record-name" id="recordName">WAITING...</div><div class="record-time" id="recordTime">— <small>SEC</small></div><div class="record-meta" id="recordMeta">Fastest completed lap</div></div></div>
+  <div class="hero-photo"><img src="/static/images/track_action.jpg" alt="RC rock crawling course"></div>
+</section>
+<section class="tv-main">
+  <section class="tv-panel live"><div class="tv-panel-head"><span>/// &nbsp; LIVE ON TRACK</span><span>REAL-TIME</span></div><div class="live-table-head"><div>Car</div><div>Driver</div><div>Status</div><div>Time Left</div><div>Laps</div><div>Best Lap</div></div><div id="live"></div></section>
+  <section class="tv-panel fast"><div class="tv-panel-head"><span>⚡ &nbsp; FASTEST LAP</span><span>TOP 8</span></div><div class="leader-list" id="fast"></div></section>
+  <section class="tv-panel laps"><div class="tv-panel-head"><span>⚑ &nbsp; MOST LAPS</span><span>TOP 8</span></div><div class="leader-list" id="laps"></div></section>
+</section>
+<footer class="tv-footer"><div class="footer-photo"></div><div class="footer-cta"><strong>CAN YOU BEAT THE RECORD?</strong><span>PUSH YOUR LIMIT</span></div><div class="footer-period"><span class="period-chip" id="pToday">TODAY</span><span class="period-chip" id="pWeek">WEEK</span><span class="period-chip" id="pMonth">MONTH</span></div></footer>
+</main>
+<script>
+const $=id=>document.getElementById(id); const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const fmt=ms=>{if(ms==null)return'—';let s=Math.max(0,Math.floor(ms/1000)),m=Math.floor(s/60);return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`};
+const lap=ms=>ms==null?'—':(ms/1000).toFixed(3); async function getj(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()}
+let cycle=0,lastRecord=null;
+function periodName(p){return p==='today'?"TODAY'S":p==='week'?"THIS WEEK'S":"THIS MONTH'S"} function activate(p){$('pToday').classList.toggle('active',p==='today');$('pWeek').classList.toggle('active',p==='week');$('pMonth').classList.toggle('active',p==='month')}
+function renderLive(sessions){const byMarker=new Map(sessions.map(s=>[s.marker_id,s]));let rows='';for(let id=1;id<=7;id++){const s=byMarker.get(id);const cname=s?esc(s.customer_name):'AVAILABLE';const car=s?esc(s.car_name):`RC-${id}`;const status=s?(s.status==='running'?'ON TRACK':'PREPARED'):'READY';const statusClass=s?s.status:'prepared';const remaining=s?(s.status==='running'?fmt(s.remaining_ms):'READY'):'READY';rows+=`<div class="live-row"><div class="car-no marker-${id}">${String(id).padStart(2,'0')}</div><div><div class="driver-name">${cname}</div><div class="driver-car marker-${id}">${car}</div></div><div class="track-status ${statusClass}">${status}</div><div class="time-left">${remaining}</div><div class="laps-value">${s?Number(s.lap_count):0}</div><div class="best-value marker-${id}">${s?lap(s.best_lap_ms):'—'}</div></div>`} $('live').innerHTML=rows}
+function renderLeader(el,rows,type){if(!rows.length){$(el).innerHTML='<div class="waiting">Waiting for completed runs</div>';return}$(el).innerHTML=rows.slice(0,8).map((r,i)=>`<div class="leader-item"><div class="leader-rank">${i+1}</div><div><div class="leader-name">${esc(r.customer_name)}</div><div class="leader-car marker-${Number(r.marker_id)||1}">${esc(r.car_name)}</div></div><div class="leader-score">${type==='fast'?lap(r.lap_ms):Number(r.lap_count)}</div></div>`).join('')}
+function renderRecord(period,rows){$('recordLabel').textContent=`${periodName(period)} TRACK RECORD`;if(!rows.length){$('recordName').textContent='WAITING...';$('recordTime').innerHTML='— <small>SEC</small>';$('recordMeta').textContent='Fastest completed lap';lastRecord=null;return}const r=rows[0],key=`${r.session_id}:${r.lap_ms}`;$('recordName').textContent=r.customer_name;$('recordTime').innerHTML=`${lap(r.lap_ms)} <small>SEC</small>`;$('recordMeta').textContent=`${r.car_name} • FASTEST COMPLETED LAP`;if(lastRecord&&lastRecord!==key){$('recordCard').classList.remove('record-flash');void $('recordCard').offsetWidth;$('recordCard').classList.add('record-flash')}lastRecord=key}
+async function refresh(){try{const d=await getj('/api/live');const dt=new Date(d.now_ms);$('clock').textContent=dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});$('date').textContent=dt.toLocaleDateString([],{weekday:'long',day:'2-digit',month:'short',year:'numeric'}).toUpperCase();renderLive(d.sessions);const p=cycle<20?'today':cycle<40?'week':'month';activate(p);const l=await getj(`/api/leaderboard?period=${p}&limit=8`);renderLeader('fast',l.fastest,'fast');renderLeader('laps',l.most_laps,'laps');renderRecord(p,l.fastest);cycle=(cycle+1)%60}catch(e){console.error(e)}}
+refresh();setInterval(refresh,1000);
+</script></body></html>

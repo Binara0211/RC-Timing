@@ -1,0 +1,72 @@
+{
+  "venue_name": "RC ROCK CRAWLING",
+  "timezone": "Asia/Colombo",
+  "host": "127.0.0.1",
+  "port": 8765,
+  "default_session_minutes": 15,
+  "min_lap_seconds": 5.0,
+  "allow_finish_after_time_expired": false,
+  "camera": {
+    "source": 1,
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "processing_width": 1280,
+    "backend": "auto",
+    "marker_dictionary": "DICT_4X4_50",
+    "allowed_marker_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "enter_frames": 2,
+    "release_frames": 4,
+    "min_marker_perimeter_px": 100,
+    "start_roi": [
+      [
+        0.0529306195533902,
+        0.10579479468452273
+      ],
+      [
+        0.051435404215094536,
+        0.9564061440108403
+      ],
+      [
+        0.46561005292299357,
+        0.959064304477485
+      ],
+      [
+        0.44916268420174127,
+        0.10313663421787798
+      ]
+    ],
+    "finish_roi": [
+      [
+        0.5448564658526638,
+        0.10579479468452273
+      ],
+      [
+        0.5373803891611855,
+        0.969696946344064
+      ],
+      [
+        0.9605263298988586,
+        0.969696946344064
+      ],
+      [
+        0.9425837458393105,
+        0.04997342488498313
+      ]
+    ],
+    "finish_source": null
+  },
+  "backup": {
+    "interval_minutes": 60,
+    "keep_days": 45,
+    "secondary_directory": ""
+  }
+}
